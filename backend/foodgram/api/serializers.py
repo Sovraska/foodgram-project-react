@@ -21,3 +21,10 @@ class UserLoginSerializer(serializers.Serializer):
 class ChangePasswordSerializer(serializers.Serializer):
     new_password = serializers.CharField(required=True, max_length=128)
     current_password = serializers.CharField(required=True, max_length=128)
+
+
+class TagsSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    color = serializers.CharField()
+    slug = serializers.CharField()

@@ -6,4 +6,3 @@ RUN yarn install
 COPY . ./
 RUN yarn run build
 CMD cp -r build result_build
-CMD ["yarn", "start", "build"]

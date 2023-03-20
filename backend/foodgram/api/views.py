@@ -8,8 +8,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 
-from .permissions import IsAuthenticatedOrReadOnlyPermission
-from .serializers import UserSerializer, UserLoginSerializer, ChangePasswordSerializer
+from .serializers import UserSerializer, UserLoginSerializer, ChangePasswordSerializer, TagsSerializer
+from recipes.models import TagsModel
 
 UserModel = get_user_model()
 
@@ -138,3 +138,10 @@ class SetPasswordViewSet(
 
     serializer_class = ChangePasswordSerializer
 
+
+class TagsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = TagsSerializer
+    pagination_class = None
+    
+    queryset = TagsModel.objects.all()

@@ -57,3 +57,8 @@ class RecipesModel(models.Model):
             MinValueValidator(1)
         ]
     )
+
+
+class FavoriteModel(models.Model):
+    name = models.CharField(max_length=100, verbose_name='Имя')
+    image =
