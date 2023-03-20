@@ -61,4 +61,4 @@ class RecipesModel(models.Model):
 
 class FavoriteModel(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя')
-    image =
+
