@@ -99,8 +99,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = 'static/'
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
@@ -143,8 +141,6 @@ LOGGING = {
         'filters': ['require_debug_true'],
         'class': 'logging.StreamHandler',
     },
-    # Custom handler which we will use with logger 'django'.
-    # We want errors/warnings to be logged when DEBUG=False
     'console_on_not_debug': {
         'level': 'WARNING',
         'filters': ['require_debug_false'],
@@ -173,6 +169,14 @@ LOGGING = {
     },
 }
 }
+
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 AUTH_USER_MODEL = 'users.UserModel'
