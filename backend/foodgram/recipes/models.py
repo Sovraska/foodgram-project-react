@@ -1,10 +1,14 @@
-import uuid
+import base64
 
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.core.files.base import ContentFile
 
 from recipes.utlis import get_file_path
+
+
+
 
 UserModel = get_user_model()
 
@@ -13,6 +17,9 @@ class TagsModel(models.Model):
     title = models.CharField(max_length=100, unique=True, verbose_name='Название')
     color = models.CharField(max_length=7, unique=True, verbose_name='Цвет')
     slug = models.SlugField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.title
 
 
 class IngredientsModel(models.Model):

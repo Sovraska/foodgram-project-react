@@ -8,8 +8,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 
-from .serializers import UserSerializer, UserLoginSerializer, ChangePasswordSerializer, TagsSerializer
-from recipes.models import TagsModel
+from .serializers import UserSerializer, UserLoginSerializer, ChangePasswordSerializer, TagsSerializer, IngredientsSerializer, RecipesSerializer
+from recipes.models import TagsModel, IngredientsModel, RecipesModel
 
 UserModel = get_user_model()
 
@@ -139,9 +139,28 @@ class SetPasswordViewSet(
     serializer_class = ChangePasswordSerializer
 
 
-class TagsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+class TagsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
     permission_classes = (IsAuthenticated, )
     serializer_class = TagsSerializer
     pagination_class = None
     
     queryset = TagsModel.objects.all()
+
+
+class IngredientsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = IngredientsSerializer
+    pagination_class = None
+
+    queryset = IngredientsModel.objects.all()
+
+
+class RecipesViewSet(
+    viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin,
+    mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin
+):
+
+    permission_classes = (IsAuthenticated,)
+    serializer_class = RecipesSerializer
+
+    queryset = RecipesModel.objects.all()
