@@ -6,23 +6,23 @@ from .models import IngredientsModel, TagsModel, RecipesModel
 @admin.register(IngredientsModel)
 class IngredientsAdmin(admin.ModelAdmin):
     list_display = (
-        'title',
+        'name',
         'measurement_unit',
     )
     search_fields = (
-        'title',
+        'name',
     )
 
 
 @admin.register(TagsModel)
 class TagsAdmin(admin.ModelAdmin):
     list_display = (
-        'title',
+        'name',
         'color',
         'slug'
     )
     search_fields = (
-        'title',
+        'name',
     )
 
 
@@ -30,12 +30,12 @@ class TagsAdmin(admin.ModelAdmin):
 class RecipesAdmin(admin.ModelAdmin):
     readonly_fields = ('chosen_count',)
     list_display = (
-        'title',
+        'name',
         'author',
         'chosen_count',
     )
     search_fields = (
-        'title',
+        'name',
         'author',
         'tags'
     )
