@@ -31,6 +31,10 @@ class UserModel(AbstractUser):
         blank=True
     )
 
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+
 
 class Follow(models.Model):
     user = models.ForeignKey(
@@ -58,4 +62,3 @@ class Follow(models.Model):
 
     def __str__(self):
         return f'{self.user} подписан на {self.author}'
-

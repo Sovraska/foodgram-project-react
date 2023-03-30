@@ -1,6 +1,6 @@
 from django.contrib import admin
-
-from .models import IngredientsModel, TagsModel, RecipesModel
+from .models import (Favorite, IngredientsModel, RecipeIngredient,
+                     RecipesModel, Shopping, TagsModel)
 
 
 @admin.register(IngredientsModel)
@@ -28,11 +28,12 @@ class TagsAdmin(admin.ModelAdmin):
 
 @admin.register(RecipesModel)
 class RecipesAdmin(admin.ModelAdmin):
-    readonly_fields = ('chosen_count',)
     list_display = (
-        'name',
         'author',
-        'chosen_count',
+        'name',
+        'image',
+        'view_text',
+        'cooking_time'
     )
     search_fields = (
         'name',
@@ -40,13 +41,39 @@ class RecipesAdmin(admin.ModelAdmin):
         'tags'
     )
 
-    def chosen_count(self, obj):
-        if obj:
-            return 1
-        return '--Избранных нет--'
-
-    chosen_count.short_description = 'аватар'
+    def view_text(self, obj):
+        return obj.text[:100]
 
 
+@admin.register(RecipeIngredient)
+class RecipeIngredientAdmin(admin.ModelAdmin):
+    list_display = (
+        'recipe',
+        'ingredient',
+        'amount',
+    )
+    search_fields = (
+        'ingredient',
+    )
 
 
+@admin.register(Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = (
+        'user',
+        'recipe',
+    )
+    search_fields = (
+        'user',
+    )
+
+
+@admin.register(Shopping)
+class ShoppingAdmin(admin.ModelAdmin):
+    list_display = (
+        'user',
+        'recipe',
+    )
+    search_fields = (
+        'user',
+    )

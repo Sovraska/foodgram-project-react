@@ -1,13 +1,9 @@
 import json
-
-import psycopg2
-import os
-
-from django.shortcuts import get_object_or_404
-from dotenv import load_dotenv
-from psycopg2 import Error
 from contextlib import closing
 
+import psycopg2
+from django.shortcuts import get_object_or_404
+from psycopg2 import Error
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -17,19 +13,26 @@ from recipes.models import RecipesModel
 def insert_into_base_ingredients():
     try:
         with closing(psycopg2.connect(
-            dbname='postgres',
-            user="postgres",
-            password='postgres',
-            host='db',
-            port=5432
+                dbname='postgres',
+                user="postgres",
+                password='postgres',
+                host='db',
+                port=5432
         )) as conn:
             with conn.cursor() as cursor:
-                with open('./data/ingredients.json', 'r', encoding='utf8') as json_file:
+                with open(
+                        './data/ingredients.json',
+                        'r',
+                        encoding='utf8'
+                ) as json_file:
                     data = json.load(json_file)
                     for line in data:
                         title = line.get('name')
                         measurement_unit = line.get('measurement_unit')
-                        cursor.execute(f"INSERT INTO recipes_ingredientsmodel(name, measurement_unit) VALUES ('{title}', '{measurement_unit}');")
+                        cursor.execute(
+                            f"INSERT INTO recipes_ingredientsmodel("
+                            f"name, measurement_unit"
+                            f") VALUES ('{title}', '{measurement_unit}');")
                         conn.commit()
                     for i in cursor:
                         print(i)
@@ -65,7 +68,6 @@ def delete(request, pk, model):
         {'errors': 'Данного рецепта не было в избранном/списке покупок'},
         status=status.HTTP_400_BAD_REQUEST
     )
-
 
 
 if __name__ == "__main__":

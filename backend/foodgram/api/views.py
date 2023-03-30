@@ -4,19 +4,24 @@ from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, mixins, permissions, status
+from rest_framework import mixins, permissions, status, viewsets
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
 
-from .permissions import IsAuthenticatedOrReadOnlyPermission
-from .serializers import UserSerializer, UserLoginSerializer, ChangePasswordSerializer, TagSerializer, IngredientsSerializer, RecipesSerializer, FollowSerializer, RecipeGetSerializer, RecipeFollowSerializer
-from recipes.models import TagsModel, IngredientsModel, RecipesModel, Favorite, Shopping, RecipeIngredient
+from recipes.models import (Favorite, IngredientsModel, RecipeIngredient,
+                            RecipesModel, Shopping, TagsModel)
 from users.models import Follow
-from .utils import post, delete
-from .filters import RecipeFilter, IngredientFilter
+
+from .filters import IngredientFilter, RecipeFilter
+from .permissions import IsAuthenticatedOrReadOnlyPermission
+from .serializers import (ChangePasswordSerializer, FollowSerializer,
+                          IngredientsSerializer, RecipeFollowSerializer,
+                          RecipeGetSerializer, RecipesSerializer,
+                          TagSerializer, UserLoginSerializer, UserSerializer)
+from .utils import delete, post
 
 UserModel = get_user_model()
 
@@ -27,7 +32,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     pagination_class = LimitOffsetPagination
 
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
 
     lookup_field = 'id'
 
@@ -41,7 +46,6 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             serializer.save()
 
-
     @action(
         detail=False,
         methods=['post'],
@@ -53,7 +57,10 @@ class UserViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
 
             user = self.request.user
-            if not check_password(serializer.validated_data['current_password'], user.password):
+            if not check_password(
+                    serializer.validated_data['current_password'],
+                    user.password
+            ):
                 message = "Current Password is incorrect"
                 return Response(message, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -61,7 +68,6 @@ class UserViewSet(viewsets.ModelViewSet):
             user.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
     @action(
         detail=False,
@@ -86,7 +92,7 @@ class UserViewSet(viewsets.ModelViewSet):
         detail=True,
         methods=['post', 'delete'],
         permission_classes=(permissions.IsAuthenticated,),
-        serializer_class=(FollowSerializer, )
+        serializer_class=(FollowSerializer,)
     )
     def subscribe(self, request, id=None):
         user = request.user
@@ -135,7 +141,7 @@ class UserLoginViewSet(
     serializer_class = UserLoginSerializer
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data,)
+        serializer = self.get_serializer(data=request.data, )
 
         serializer.is_valid(raise_exception=True)
 
@@ -181,15 +187,23 @@ class UserLogoutViewSet(
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class TagsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
-    permission_classes = (AllowAny, )
+class TagsViewSet(
+    viewsets.GenericViewSet,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin
+):
+    permission_classes = (AllowAny,)
     serializer_class = TagSerializer
     pagination_class = None
-    
+
     queryset = TagsModel.objects.all()
 
 
-class IngredientsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
+class IngredientsViewSet(
+    viewsets.GenericViewSet,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin
+):
     permission_classes = (AllowAny,)
     serializer_class = IngredientsSerializer
     filter_backends = (DjangoFilterBackend,)
@@ -223,11 +237,15 @@ class RecipesViewSet(
     def get_queryset(self):
         is_favorited = self.request.query_params.get('is_favorited')
         if is_favorited is not None and int(is_favorited) == 1:
-            return RecipesModel.objects.filter(favorites__user=self.request.user)
+            return RecipesModel.objects.filter(
+                favorites__user=self.request.user
+            )
         is_in_shopping_cart = self.request.query_params.get(
             'is_in_shopping_cart')
         if is_in_shopping_cart is not None and int(is_in_shopping_cart) == 1:
-            return RecipesModel.objects.filter(recipe_cart__user=self.request.user)
+            return RecipesModel.objects.filter(
+                recipe_cart__user=self.request.user
+            )
         return RecipesModel.objects.all()
 
     def perform_create(self, serializer):
@@ -267,9 +285,11 @@ class RecipesViewSet(
         for ingredient in ingredients:
             text += '{} - {} {}. \n'.format(*ingredient)
 
-        file = HttpResponse('Покупки:\n' + text, content_type='text/plain')
+        file = HttpResponse(
+            'Покупки:\n' + text, content_type='text/plain'
+        )
 
-        file['Content-Disposition'] = (f'attachment; filename=cart.txt')
+        file['Content-Disposition'] = ('attachment; filename=cart.txt')
         return file
 
 
@@ -280,4 +300,3 @@ class FollowListViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     def get_queryset(self):
         user = self.request.user
         return Follow.objects.filter(user=user)
-

@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -14,7 +14,6 @@ SECRET_KEY = 'django-insecure-ptrp@mf%+4^!yu=sgfrrv%du&fb54c0&v8qe1nh9racd_#+kte
 DEBUG = True
 
 ALLOWED_HOSTS = ['infra_backend_1:8000', '127.0.0.1', '127.0.0.1:8000', '51.250.100.232', '51.250.100.232:8000']
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -63,7 +62,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
@@ -74,7 +72,6 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT')
     }
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -91,7 +88,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -101,7 +97,6 @@ USE_I18N = True
 USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
@@ -118,57 +113,56 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 6,
 }
 
-
 LOGGING = {
-'version': 1,
-'disable_existing_loggers': False,
-'filters': {
-    'require_debug_false': {
-        '()': 'django.utils.log.RequireDebugFalse',
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
     },
-    'require_debug_true': {
-        '()': 'django.utils.log.RequireDebugTrue',
+    'formatters': {
+        'django.server': {
+            '()': 'django.utils.log.ServerFormatter',
+            'format': '[%(server_time)s] %(message)s',
+        }
     },
-},
-'formatters': {
-    'django.server': {
-        '()': 'django.utils.log.ServerFormatter',
-        'format': '[%(server_time)s] %(message)s',
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+        },
+        'console_on_not_debug': {
+            'level': 'WARNING',
+            'filters': ['require_debug_false'],
+            'class': 'logging.StreamHandler',
+        },
+        'django.server': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'django.server',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'mail_admins', 'console_on_not_debug'],
+            'level': 'INFO',
+        },
+        'django.server': {
+            'handlers': ['django.server'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     }
-},
-'handlers': {
-    'console': {
-        'level': 'INFO',
-        'filters': ['require_debug_true'],
-        'class': 'logging.StreamHandler',
-    },
-    'console_on_not_debug': {
-        'level': 'WARNING',
-        'filters': ['require_debug_false'],
-        'class': 'logging.StreamHandler',
-    },
-    'django.server': {
-        'level': 'INFO',
-        'class': 'logging.StreamHandler',
-        'formatter': 'django.server',
-    },
-    'mail_admins': {
-        'level': 'ERROR',
-        'filters': ['require_debug_false'],
-        'class': 'django.utils.log.AdminEmailHandler'
-    }
-},
-'loggers': {
-    'django': {
-        'handlers': ['console', 'mail_admins', 'console_on_not_debug'],
-        'level': 'INFO',
-    },
-    'django.server': {
-        'handlers': ['django.server'],
-        'level': 'INFO',
-        'propagate': False,
-    },
-}
 }
 
 STATIC_URL = '/static/'

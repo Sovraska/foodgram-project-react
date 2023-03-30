@@ -1,35 +1,43 @@
-import base64
-
 from django.contrib.auth import get_user_model
 from django.core import validators
 from django.db import models
-from django.core.files.base import ContentFile
-
-
-
 
 UserModel = get_user_model()
 
 
 class TagsModel(models.Model):
-    name = models.CharField(max_length=100, unique=True, verbose_name='Название')
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        verbose_name='Название'
+    )
     color = models.CharField(max_length=7, unique=True, verbose_name='Цвет')
     slug = models.SlugField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+
 
 class IngredientsModel(models.Model):
-    name = models.CharField(max_length=100)
-    measurement_unit = models.CharField(max_length=200)
+    name = models.CharField(max_length=100, verbose_name='Название')
+    measurement_unit = models.CharField(
+        max_length=200,
+        verbose_name='Единица измерения'
+    )
 
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Ингридиент'
+        verbose_name_plural = 'Ингридиенты'
+
 
 class RecipesModel(models.Model):
-
     author = models.ForeignKey(
         UserModel,
         on_delete=models.CASCADE,
@@ -58,6 +66,9 @@ class RecipesModel(models.Model):
             1, message='Минимальное время приготовления 1 минута'),
         )
     )
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         ordering = ['-id']
@@ -120,9 +131,14 @@ class Favorite(models.Model):
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранные'
         constraints = [
-            models.UniqueConstraint(fields=['user', 'recipe'],
-                                    name='unique_favorite_recipes')
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_favorite_recipes'
+            )
         ]
+
+    def __str__(self):
+        return f'Рецепт {self.recipe} в избранном у {self.user}'
 
 
 class Shopping(models.Model):
@@ -143,8 +159,10 @@ class Shopping(models.Model):
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Списки покупок'
         constraints = [
-            models.UniqueConstraint(fields=['user', 'recipe'],
-                                    name='unique_cart_user_recipes')
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_cart_user_recipes'
+            )
         ]
 
     def __str__(self):

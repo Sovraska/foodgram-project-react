@@ -1,12 +1,11 @@
-import base64
-
 from django.contrib.auth import get_user_model
-
-from rest_framework import serializers
-from recipes.models import IngredientsModel, TagsModel, RecipesModel, RecipeIngredient
-from users.models import Follow
-from rest_framework.validators import UniqueTogetherValidator
 from drf_extra_fields.fields import Base64ImageField
+from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
+
+from recipes.models import (IngredientsModel, RecipeIngredient, RecipesModel,
+                            TagsModel)
+from users.models import Follow
 
 UserModel = get_user_model()
 
@@ -18,10 +17,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserModel
-        fields = ('email', 'username', 'first_name', 'last_name', 'password', 'id', 'is_subscribed')
+        fields = (
+            'email', 'username', 'first_name',
+            'last_name', 'password', 'id', 'is_subscribed'
+        )
 
     def get_is_subscribed(self, obj):
-
         user = self.context['request'].user
 
         if user.is_anonymous:
@@ -39,9 +40,7 @@ class ChangePasswordSerializer(serializers.Serializer):
     current_password = serializers.CharField(required=True, max_length=128)
 
 
-
 class TagSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = TagsModel
         fields = '__all__'
@@ -49,7 +48,6 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class IngredientsSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = IngredientsModel
         fields = ('id', 'name', 'measurement_unit')
