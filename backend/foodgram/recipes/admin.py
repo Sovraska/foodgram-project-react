@@ -33,7 +33,8 @@ class RecipesAdmin(admin.ModelAdmin):
         'name',
         'image',
         'view_text',
-        'cooking_time'
+        'cooking_time',
+        'count_favorite',
     )
     search_fields = (
         'name',
@@ -41,8 +42,13 @@ class RecipesAdmin(admin.ModelAdmin):
         'tags'
     )
 
+    readonly_fields = ('count_favorite',)
+
     def view_text(self, obj):
         return obj.text[:100]
+
+    def count_favorite(self, obj):
+        return obj.favorites.count()
 
 
 @admin.register(RecipeIngredient)

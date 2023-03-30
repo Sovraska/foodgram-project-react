@@ -21,7 +21,6 @@ from .serializers import (ChangePasswordSerializer, FollowSerializer,
                           IngredientsSerializer, RecipeFollowSerializer,
                           RecipeGetSerializer, RecipesSerializer,
                           TagSerializer, UserLoginSerializer, UserSerializer)
-from .utils import delete, post
 
 UserModel = get_user_model()
 
@@ -254,14 +253,14 @@ class RecipesViewSet(
     @action(detail=True, methods=['POST', 'DELETE'], )
     def favorite(self, request, pk):
         if self.request.method == 'POST':
-            return post(request, pk, Favorite, RecipeFollowSerializer)
-        return delete(request, pk, Favorite)
+            return post_obj(request, pk, Favorite, RecipeFollowSerializer)
+        return delete_obj(request, pk, Favorite)
 
     @action(detail=True, methods=['POST', 'DELETE'], )
     def shopping_cart(self, request, pk):
         if request.method == 'POST':
-            return post(request, pk, Shopping, RecipeFollowSerializer)
-        return delete(request, pk, Shopping)
+            return post_obj(request, pk, Shopping, RecipeFollowSerializer)
+        return delete_obj(request, pk, Shopping)
 
     @action(detail=False, methods=['GET'], )
     def download_shopping_cart(self, request):
@@ -300,3 +299,31 @@ class FollowListViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     def get_queryset(self):
         user = self.request.user
         return Follow.objects.filter(user=user)
+
+
+def delete_obj(request, pk, model):
+    recipe = get_object_or_404(RecipesModel, pk=pk)
+    if model.objects.filter(user=request.user, recipe=recipe).exists():
+        follow = get_object_or_404(model, user=request.user,
+                                   recipe=recipe)
+        follow.delete()
+        return Response(
+            'Рецепт успешно удален из избранного/списка покупок',
+            status=status.HTTP_204_NO_CONTENT
+        )
+    return Response(
+        {'errors': 'Данного рецепта не было в избранном/списке покупок'},
+        status=status.HTTP_400_BAD_REQUEST
+    )
+
+
+def post_obj(request, pk, model, serializer):
+    recipe = get_object_or_404(RecipesModel, pk=pk)
+    if model.objects.filter(user=request.user, recipe=recipe).exists():
+        return Response(
+            {'errors': 'Рецепт уже есть в избранном/списке покупок'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    model.objects.get_or_create(user=request.user, recipe=recipe)
+    data = serializer(recipe).data
+    return Response(data, status=status.HTTP_201_CREATED)
