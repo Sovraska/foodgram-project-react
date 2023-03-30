@@ -29,5 +29,5 @@ class FollowAdmin(admin.ModelAdmin):
         'author'
     )
     search_fields = (
-        'user'
+        'user',
     )
