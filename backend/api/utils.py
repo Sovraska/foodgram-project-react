@@ -1,9 +1,7 @@
 from django.shortcuts import get_object_or_404
-
+from recipes.models import RecipesModel
 from rest_framework import status
 from rest_framework.response import Response
-
-from recipes.models import RecipesModel
 
 
 def delete_obj(request, pk, model):

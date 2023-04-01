@@ -1,0 +1,14 @@
+# Enable flake8-bugbear (`B`) rules.
+select = ["E", "F", "B"]
+
+# Avoid trying to fix flake8-bugbear (`B`) violations.
+unfixable = ["B"]
+
+extend-exclude = [
+    "backend/recipes/migrations",
+    "backend/users/migrations"
+
+]
+
+[per-file-ignores]
+"settings.py" = ["E501"]

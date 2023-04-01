@@ -8,20 +8,20 @@ from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
+from users.models import Follow
 from recipes.models import (Favorite, IngredientsModel, RecipeIngredient,
                             RecipesModel, ShoppingCart, TagsModel)
-from users.models import Follow
-
 from .filters import IngredientFilter, RecipeFilter
+from .paginators import PageLimitPagination
 from .serializers import (ChangePasswordSerializer, FollowSerializer,
                           IngredientsSerializer, RecipeFollowSerializer,
                           RecipeGetSerializer, RecipesSerializer,
                           TagSerializer, UserLoginSerializer, UserSerializer)
-from .utils import post_obj, delete_obj
-from .paginators import PageLimitPagination
+from .utils import delete_obj, post_obj
 
 UserModel = get_user_model()
 

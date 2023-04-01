@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from contextlib import closing
 from pathlib import Path
@@ -6,8 +7,6 @@ from pathlib import Path
 import psycopg2
 from dotenv import load_dotenv
 from psycopg2 import Error
-import logging
-
 
 PROJECT_BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
