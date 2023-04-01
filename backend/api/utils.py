@@ -37,7 +37,7 @@ def insert_into_base_ingredients():
         )) as conn:
             with conn.cursor() as cursor:
                 with open(
-                        './../data/ingredients.json',
+                        './data/ingredients.json',
                         'r',
                         encoding='utf8'
                 ) as json_file:

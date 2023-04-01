@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth.hashers import check_password
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -21,6 +21,7 @@ from .serializers import (ChangePasswordSerializer, FollowSerializer,
                           RecipeGetSerializer, RecipesSerializer,
                           TagSerializer, UserLoginSerializer, UserSerializer)
 from .utils import post_obj, delete_obj
+from .paginators import PageLimitPagination
 
 UserModel = get_user_model()
 
@@ -189,6 +190,7 @@ class IngredientsViewSet(
 class RecipesViewSet(
     viewsets.ModelViewSet
 ):
+    pagination_class = PageLimitPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     permission_classes = (IsAuthenticatedOrReadOnly,)
@@ -216,7 +218,7 @@ class RecipesViewSet(
             'is_in_shopping_cart')
         if is_in_shopping_cart is not None and int(is_in_shopping_cart) == 1:
             return RecipesModel.objects.filter(
-                recipe_cart__user=self.request.user
+                cart__user=self.request.user
             )
         return RecipesModel.objects.all()
 
