@@ -123,7 +123,7 @@ class UserLoginViewSet(
         email = serializer.validated_data.get('email')
 
         if not UserModel.objects.filter(email=email).exists():
-            message = "email is incorrect"
+            message = "This email has already been taken"
             return Response(
                 data=message,
                 status=status.HTTP_400_BAD_REQUEST
@@ -137,7 +137,7 @@ class UserLoginViewSet(
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        token, created = Token.objects.get_or_create(user=user)
+        token, _ = Token.objects.get_or_create(user=user)
 
         response = {
             "auth_token": str(token)
@@ -209,14 +209,14 @@ class RecipesViewSet(
         return RecipesSerializer
 
     def get_queryset(self):
-        is_favorited = self.request.query_params.get('is_favorited')
-        if is_favorited is not None and int(is_favorited) == 1:
+        is_favorited = self.request.query_params.get('is_favorited') or 0
+        if int(is_favorited) == 1:
             return RecipesModel.objects.filter(
                 favorites__user=self.request.user
             )
         is_in_shopping_cart = self.request.query_params.get(
-            'is_in_shopping_cart')
-        if is_in_shopping_cart is not None and int(is_in_shopping_cart) == 1:
+            'is_in_shopping_cart') or 0
+        if int(is_in_shopping_cart) == 1:
             return RecipesModel.objects.filter(
                 cart__user=self.request.user
             )
