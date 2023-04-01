@@ -17,18 +17,28 @@
 - <http://51.250.100.232/admin>
   - login: admin
   - password: 123
+  
+## Стек технологий
+- Python
+- Django
+- Django REST Framework
+- PostgreSQL
+- Docker
 
-## Развертывание проекта
+## Зависимости
+- Перечислены в файле backend/requirements.txt
+
+
+## Для запуска на собственном сервере
 
 1. Установите на сервере `docker` и `docker-compose`
 2. Создайте файл `/infra/.env` Шаблон для заполнения файла нахоится в `/infra/.env.example`
 3. Из директории `/infra/` выполните команду `docker-compose up -d --buld`
 5. Выполните миграции `docker-compose exec -it app python manage.py migrate`
-6. Создайте суперюзера `docker-compose exec -it app python manage.py createsuperuser`
+6. Создайте Администратора `docker-compose exec -it app python manage.py createsuperuser`
 7. Соберите статику `docker-compose exec app python manage.py collectstatic --no-input`
-8. Загрузите фикстуры в Базу `sudo docker exec -it app python manage.py loaddata > database.json`
-8. Заполните базу ингредиентами `docker-compose exec app python api/utils.py`
-9. Документация к API находится по адресу: <http://51.250.100.232/api/docs/>.
+8. Из директории `/backend/` Загрузите фикстуры в Базу `sudo docker exec -it app python manage.py loaddata > database.json`
+8. Документация к API находится по адресу: <http://51.250.100.232/api/docs/>.
 
 ## Автор
 
