@@ -14,8 +14,10 @@ from rest_framework.response import Response
 
 from recipes.models import RecipesModel
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
-load_dotenv(os.path.join(BASE_DIR / 'infra', '.env'))
+
+PROJECT_BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+load_dotenv(os.path.join(PROJECT_BASE_DIR / 'infra', '.env'))
 
 DB_NAME = str(os.getenv('DB_NAME'))
 POSTGRES_USER = str(os.getenv('POSTGRES_USER'))
@@ -35,7 +37,7 @@ def insert_into_base_ingredients():
         )) as conn:
             with conn.cursor() as cursor:
                 with open(
-                        './data/ingredients.json',
+                        './../data/ingredients.json',
                         'r',
                         encoding='utf8'
                 ) as json_file:
