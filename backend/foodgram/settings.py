@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-PROJECT_BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+PROJECT_BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 load_dotenv(f'{PROJECT_BASE_DIR}/infra/.env')
 
@@ -13,22 +13,33 @@ SECRET_KEY = 'django-insecure-ptrp@mf%+4^!yu=sgfrrv%du&fb54c0&v8qe1nh9racd_#+kte
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['infra_backend_1:8000', '127.0.0.1', '127.0.0.1:8000', '51.250.100.232', '51.250.100.232:8000']
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    '51.250.100.232',
+]
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+]
+
+LOCAL_APPS = [
+    'api.apps.ApiConfig',
+    'users.apps.UsersConfig',
+    'recipes.apps.RecipesConfig',
+]
+
+THIRD_PARTY_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'rest_framework',
-    'api.apps.ApiConfig',
-    'users.apps.UsersConfig',
-    'recipes.apps.RecipesConfig'
 ]
+
+INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

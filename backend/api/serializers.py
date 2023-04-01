@@ -1,4 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
+from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
@@ -12,7 +14,6 @@ UserModel = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
-    id = serializers.IntegerField(read_only=True)
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
@@ -29,6 +30,14 @@ class UserSerializer(serializers.ModelSerializer):
             return False
         return Follow.objects.filter(user=user, author=obj).exists()
 
+    def validate(self, data):
+        if 'password' in data:
+            password = make_password(data['password'])
+            data['password'] = password
+            return data
+        else:
+            return data
+
 
 class UserLoginSerializer(serializers.Serializer):
     password = serializers.CharField(required=True, max_length=128)
@@ -43,8 +52,17 @@ class ChangePasswordSerializer(serializers.Serializer):
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = TagsModel
-        fields = '__all__'
-        read_only_fields = '__all__',
+        fields = (
+            'id',
+            'name',
+            'color',
+            'slug'
+        )
+        read_only_fields = (
+            'name',
+            'color',
+            'slug'
+        )
 
 
 class IngredientsSerializer(serializers.ModelSerializer):
@@ -90,6 +108,24 @@ class FollowSerializer(serializers.ModelSerializer):
             queryset = queryset[:int(limit)]
         return RecipeFollowSerializer(queryset, many=True).data
 
+    def validate(self, data):
+        author_id = self.context.get('id')
+        user_id = self.context.get('request').user.id
+        print(author_id)
+        print(user_id)
+        if user_id == author_id:
+            raise serializers.ValidationError(
+                'Нельзя подписаться на самого себя'
+            )
+        if Follow.objects.filter(
+                user=user_id,
+                author=author_id
+        ).exists():
+            raise serializers.ValidationError(
+                'Вы уже подписаны на данного пользователя'
+            )
+        return data
+
 
 class RecipeGetSerializer(serializers.ModelSerializer):
     image = Base64ImageField(max_length=None, use_url=True)
@@ -134,17 +170,17 @@ class IngredientRecipeGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecipeIngredient
         fields = ('id', 'name', 'measurement_unit', 'amount')
-        validators = [
+        validators = (
             UniqueTogetherValidator(
                 queryset=RecipeIngredient.objects.all(),
-                fields=['ingredient', 'recipe']
+                fields=('ingredient', 'recipe')
             )
-        ]
+        )
 
 
 class IngredientRecipeSerializer(serializers.ModelSerializer):
     recipe = serializers.PrimaryKeyRelatedField(read_only=True)
-    amount = serializers.IntegerField(write_only=True, min_value=1)
+    amount = serializers.IntegerField(write_only=True)
     id = serializers.PrimaryKeyRelatedField(
         source='ingredient',
         queryset=IngredientsModel.objects.all()
@@ -198,13 +234,13 @@ class RecipesSerializer(serializers.ModelSerializer):
         recipe = RecipesModel.objects.create(**validated_data)
         recipe.tags.set(tags_data)
 
-        bulk_create_data = (
+        bulk_create_data = [
             RecipeIngredient(
                 recipe=recipe,
                 ingredient=ingredient_data['ingredient'],
                 amount=ingredient_data['amount'])
             for ingredient_data in ingredients_data
-        )
+        ]
         RecipeIngredient.objects.bulk_create(bulk_create_data)
         return recipe
 
@@ -214,15 +250,16 @@ class RecipesSerializer(serializers.ModelSerializer):
             instance.tags.set(tags_data)
         if 'ingredients' in self.validated_data:
             ingredients_data = validated_data.pop('ingredients')
-            amount_set = RecipeIngredient.objects.filter(
-                recipe__id=instance.id)
-            amount_set.delete()
-            bulk_create_data = (
-                RecipeIngredient(
-                    recipe=instance,
-                    ingredient=ingredient_data['ingredient'],
-                    amount=ingredient_data['amount'])
-                for ingredient_data in ingredients_data
-            )
-            RecipeIngredient.objects.bulk_create(bulk_create_data)
+            with transaction.atomic():
+                amount_set = RecipeIngredient.objects.filter(
+                    recipe__id=instance.id)
+                amount_set.delete()
+                bulk_create_data = (
+                    RecipeIngredient(
+                        recipe=instance,
+                        ingredient=ingredient_data['ingredient'],
+                        amount=ingredient_data['amount'])
+                    for ingredient_data in ingredients_data
+                )
+                RecipeIngredient.objects.bulk_create(bulk_create_data)
         return super().update(instance, validated_data)

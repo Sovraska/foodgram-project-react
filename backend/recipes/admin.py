@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import (Favorite, IngredientsModel, RecipeIngredient,
-                     RecipesModel, Shopping, TagsModel)
+                     RecipesModel, ShoppingCart, TagsModel)
 
 
 @admin.register(IngredientsModel)
@@ -48,7 +48,7 @@ class RecipesAdmin(admin.ModelAdmin):
         return obj.text[:100]
 
     def count_favorite(self, obj):
-        return obj.favorites.count()
+        return obj.favorites.select_related('user').count()
 
 
 @admin.register(RecipeIngredient)
@@ -74,8 +74,8 @@ class FavoriteAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(Shopping)
-class ShoppingAdmin(admin.ModelAdmin):
+@admin.register(ShoppingCart)
+class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = (
         'user',
         'recipe',

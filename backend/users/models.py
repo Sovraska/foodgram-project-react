@@ -17,7 +17,7 @@ class UserModel(AbstractUser):
     )
     email = models.EmailField(
         max_length=254,
-        verbose_name='email',
+        verbose_name='Электронная почта',
         unique=True
     )
     first_name = models.CharField(
@@ -55,10 +55,10 @@ class Follow(models.Model):
         verbose_name_plural = 'Подписки'
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'author'],
+                fields=('user', 'author'),
                 name='unique_follow'
             )
         ]
 
     def __str__(self):
-        return f'{self.user} подписан на {self.author}'
+        return f'{self.user_id} подписан на {self.author_id}'

@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 
 from recipes.models import IngredientsModel, RecipesModel, TagsModel
 
-User = get_user_model()
+UserModel = get_user_model()
 
 
 class IngredientFilter(django_filters.FilterSet):
@@ -23,7 +23,7 @@ class RecipeFilter(django_filters.FilterSet):
         to_field_name='slug',
         queryset=TagsModel.objects.all(),
     )
-    author = django_filters.ModelChoiceFilter(queryset=User.objects.all())
+    author = django_filters.ModelChoiceFilter(queryset=UserModel.objects.all())
 
     class Meta:
         model = RecipesModel

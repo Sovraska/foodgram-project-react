@@ -3,11 +3,11 @@ from django.contrib.auth import get_user_model
 
 from .models import Follow
 
-User = get_user_model()
+UserModel = get_user_model()
 
 
-@admin.register(User)
-class UserAdmin(admin.ModelAdmin):
+@admin.register(UserModel)
+class UserModelAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'username',
