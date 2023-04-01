@@ -52,7 +52,7 @@ class RecipesModel(models.Model):
     text = models.TextField()
     ingredients = models.ManyToManyField(
         IngredientsModel,
-        related_name='recipe',
+        related_name='recipes',
         verbose_name='Ингредиенты'
     )
     tags = models.ManyToManyField(

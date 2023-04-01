@@ -242,10 +242,9 @@ class RecipesViewSet(
         if not request.user.cart.exists():
             return Response(
                 'В корзине нет товаров', status=status.HTTP_400_BAD_REQUEST)
-
         ingredients = (
             RecipeIngredient.objects
-            .filter(recipe__recipe_cart__user=request.user)
+            .filter(recipe__cart__user=request.user)
             .values('ingredient')
             .annotate(total_amount=Sum('amount'))
             .values_list(
