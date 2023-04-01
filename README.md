@@ -37,7 +37,9 @@
 5. Выполните миграции `docker-compose exec -it app python manage.py migrate`
 6. Создайте Администратора `docker-compose exec -it app python manage.py createsuperuser`
 7. Соберите статику `docker-compose exec app python manage.py collectstatic --no-input`
-8. Из директории `/backend/` Загрузите фикстуры в Базу `sudo docker exec -it app python manage.py loaddata > database.json`
+8. Из директории `/backend/` Загрузите фикстуры в Базу 
+
+    `sudo docker exec -it app python manage.py loaddata > database.json`
 8. Документация к API находится по адресу: <http://51.250.100.232/api/docs/>.
 
 ## Автор
