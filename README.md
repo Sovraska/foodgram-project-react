@@ -39,7 +39,7 @@
 7. Соберите статику `docker-compose exec app python manage.py collectstatic --no-input`
 8. Из директории `/backend/` Загрузите фикстуры в Базу 
 
-    `sudo docker exec -it app python manage.py loaddata > database.json`
+    `sudo docker exec -it app python manage.py loaddata fixtures.json`
 8. Документация к API находится по адресу: <http://51.250.100.232/api/docs/>.
 
 ## Автор
